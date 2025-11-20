@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="de" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>مواعيدي</title>
+    <title data-i18n="my_appointments">Meine Termine</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <!-- Create these icon files and place them in the root directory -->
     <link rel="apple-touch-icon" href="icon-180x180.png" sizes="180x180">
     <link rel="icon" type="image/png" href="icon-192x192.png" sizes="192x192">
     <link rel="icon" type="image/png" href="icon-512x512.png" sizes="512x512">
@@ -17,7 +16,8 @@
 <body>
     <div id="app">
         <header class="app-header">
-            <h1>مواعيدي</h1>
+            <h1 data-i18n="my_appointments_header">Meine Termine</h1>
+            <div id="current-date" class="current-date"></div>
             <button id="add-appointment-btn" class="add-btn"><img src="add.svg" alt="Add"></button>
         </header>
         <main class="app-main">
@@ -28,18 +28,23 @@
         <div id="add-appointment-modal" class="modal">
             <div class="modal-content">
                 <header class="modal-header">
-                    <h2>موعد جديد</h2>
+                    <h2 data-i18n="new_appointment">Neuer Termin</h2>
                     <button id="close-modal-btn" class="close-btn"><img src="close.svg" alt="Close"></button>
                 </header>
                 <form id="add-appointment-form" class="modal-form">
-                    <input type="text" id="appointment-title" placeholder="عنوان الموعد" required>
+                    <input type="text" id="appointment-title" data-i18n-placeholder="appointment_title_placeholder" placeholder="Titel des Termins" required>
                     <input type="date" id="appointment-date" required>
                     <input type="time" id="appointment-time" required>
-                    <button type="submit" class="save-btn">حفظ</button>
+                    <button type="submit" class="save-btn" data-i18n="save">Speichern</button>
                 </form>
             </div>
         </div>
+        <div class="language-switcher">
+            <button id="lang-de">DE</button>
+            <button id="lang-en">EN</button>
+        </div>
     </div>
+    <script src="localization.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
