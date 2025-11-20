@@ -1,15 +1,15 @@
 :root {
     --primary-color: #007AFF;
-    --background-color: #F2F2F7;
-    --secondary-background-color: #FFFFFF;
-    --text-color: #000000;
-    --secondary-text-color: #8E8E93;
-    --separator-color: #C6C6C8;
-    --red-color: #FF3B30;
+    --background-color: #f0f2f5;
+    --secondary-background-color: #ffffff;
+    --text-color: #0d1117;
+    --secondary-text-color: #586069;
+    --separator-color: #d0d7de;
+    --red-color: #d73a49;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", "Arial", sans-serif;
+    font-family: 'Roboto', sans-serif;
     background-color: var(--background-color);
     color: var(--text-color);
     margin: 0;
@@ -35,6 +35,7 @@ body {
     position: sticky;
     top: 0;
     z-index: 1;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .app-header h1 {
@@ -43,11 +44,35 @@ body {
     margin: 0;
 }
 
+.tab-bar {
+    display: flex;
+    justify-content: space-around;
+    background-color: var(--secondary-background-color);
+    border-bottom: 1px solid var(--separator-color);
+}
+
+.tab-btn {
+    background-color: transparent;
+    border: none;
+    color: var(--secondary-text-color);
+    padding: 14px 16px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.3s, border-bottom-color 0.3s;
+}
+
+.tab-btn.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
 .add-btn {
     background-color: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 50%;
+    border-radius: 12px;
     width: 44px;
     height: 44px;
     font-size: 36px;
@@ -67,7 +92,7 @@ body {
     padding: 0;
     margin: 0;
     background-color: var(--secondary-background-color);
-    border-radius: 10px;
+    border-radius: 6px;
 }
 
 .appointment-list li {
@@ -97,17 +122,24 @@ body {
     color: var(--secondary-text-color);
 }
 
-.add-btn img, .close-btn img, .delete-btn img {
+.add-btn img, .close-btn img, .delete-btn img, .edit-btn img {
     width: 24px;
     height: 24px;
+    transition: transform 0.3s;
 }
 
-.delete-btn {
+.delete-btn, .edit-btn {
     background-color: transparent;
     border: none;
     cursor: pointer;
     padding: 0;
+    margin-left: 10px;
 }
+
+.delete-btn:hover img, .edit-btn:hover img {
+    transform: scale(1.1);
+}
+
 
 .modal {
     display: none;
@@ -118,25 +150,29 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,0.4);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 
 .modal-content {
     background-color: var(--secondary-background-color);
-    margin: 50% auto;
+    margin: auto;
     width: 90%;
     max-width: 400px;
-    border-radius: 14px;
+    border-radius: 12px;
     overflow: hidden;
     animation: slide-up 0.3s ease-out;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
 }
 
 .modal-header {
-    padding: 16px;
+    padding: 20px;
     border-bottom: 1px solid var(--separator-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
+
 
 .modal-header h2 {
     font-size: 20px;
@@ -150,6 +186,7 @@ body {
     font-size: 28px;
     color: var(--secondary-text-color);
     cursor: pointer;
+    border-radius: 12px;
 }
 
 .modal-form {
@@ -163,19 +200,25 @@ body {
     font-size: 17px;
     padding: 12px;
     border: 1px solid var(--separator-color);
-    border-radius: 8px;
+    border-radius: 6px;
 }
 
 .save-btn {
     background-color: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     padding: 14px;
     font-size: 17px;
     font-weight: 600;
     cursor: pointer;
+    transition: background-color 0.3s;
 }
+
+.save-btn:hover {
+    background-color: #0056b3;
+}
+
 
 @keyframes slide-up {
     from {
@@ -183,5 +226,24 @@ body {
     }
     to {
         transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .app-header h1 {
+        font-size: 28px;
+    }
+
+    .app-header {
+        padding: 12px;
+    }
+
+    .app-main {
+        padding: 12px;
+    }
+
+    .tab-btn {
+        font-size: 15px;
+        padding: 12px 14px;
     }
 }
