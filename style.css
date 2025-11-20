@@ -1,0 +1,187 @@
+:root {
+    --primary-color: #007AFF;
+    --background-color: #F2F2F7;
+    --secondary-background-color: #FFFFFF;
+    --text-color: #000000;
+    --secondary-text-color: #8E8E93;
+    --separator-color: #C6C6C8;
+    --red-color: #FF3B30;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", "Arial", sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+    max-width: 100%;
+    margin: 0 auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-header {
+    background-color: var(--secondary-background-color);
+    border-bottom: 1px solid var(--separator-color);
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.app-header h1 {
+    font-size: 34px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.add-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 36px;
+    line-height: 44px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.app-main {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.appointment-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background-color: var(--secondary-background-color);
+    border-radius: 10px;
+}
+
+.appointment-list li {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--separator-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.appointment-list li:last-child {
+    border-bottom: none;
+}
+
+.appointment-list .appointment-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.appointment-list .appointment-title {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.appointment-list .appointment-time {
+    font-size: 15px;
+    color: var(--secondary-text-color);
+}
+
+.add-btn img, .close-btn img, .delete-btn img {
+    width: 24px;
+    height: 24px;
+}
+
+.delete-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: var(--secondary-background-color);
+    margin: 50% auto;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 14px;
+    overflow: hidden;
+    animation: slide-up 0.3s ease-out;
+}
+
+.modal-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--separator-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: var(--secondary-text-color);
+    cursor: pointer;
+}
+
+.modal-form {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.modal-form input {
+    font-size: 17px;
+    padding: 12px;
+    border: 1px solid var(--separator-color);
+    border-radius: 8px;
+}
+
+.save-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+@keyframes slide-up {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
