@@ -4,32 +4,72 @@ document.addEventListener('DOMContentLoaded', () => {
     const addAppointmentModal = document.getElementById('add-appointment-modal');
     const addAppointmentForm = document.getElementById('add-appointment-form');
     const appointmentList = document.getElementById('appointment-list');
+    const tabBar = document.querySelector('.tab-bar');
 
     let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+    let currentTab = 'current';
 
     const saveAppointments = () => {
         localStorage.setItem('appointments', JSON.stringify(appointments));
     };
 
+    tabBar.addEventListener('click', (e) => {
+        const tabBtn = e.target.closest('.tab-btn');
+        if (tabBtn) {
+            currentTab = tabBtn.dataset.tab;
+            document.querySelector('.tab-btn.active').classList.remove('active');
+            tabBtn.classList.add('active');
+            renderAppointments();
+        }
+    });
+
+
     const renderAppointments = () => {
         appointmentList.innerHTML = '';
-        if (appointments.length === 0) {
+
+        // Sort appointments by date and time
+        appointments.sort((a, b) => {
+            const dateA = new Date(`${a.date}T${a.time}`);
+            const dateB = new Date(`${b.date}T${b.time}`);
+            return dateA - dateB;
+        });
+
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        const filteredAppointments = appointments.filter(appointment => {
+            const appointmentDate = new Date(appointment.date);
+            if (currentTab === 'previous') {
+                return appointmentDate < today;
+            } else if (currentTab === 'upcoming') {
+                return appointmentDate > today;
+            } else { // current
+                return appointmentDate.getTime() === today.getTime();
+            }
+        });
+
+        if (filteredAppointments.length === 0) {
             const emptyMessage = document.createElement('li');
             emptyMessage.textContent = 'Keine Termine';
             emptyMessage.style.textAlign = 'center';
             emptyMessage.style.color = 'var(--secondary-text-color)';
             appointmentList.appendChild(emptyMessage);
         } else {
-            appointments.forEach((appointment, index) => {
+            filteredAppointments.forEach(appointment => {
+                const originalIndex = appointments.indexOf(appointment);
                 const li = document.createElement('li');
+                const date = new Date(`${appointment.date}T${appointment.time}`);
+                const formattedDate = date.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                const formattedTime = date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
                 li.innerHTML = `
                     <div class="appointment-details">
                         <span class="appointment-title">${appointment.title}</span>
-                        <span class="appointment-time">${new Date(appointment.date).toLocaleDateString('de-DE')} - ${appointment.time}</span>
+                        <span class="appointment-time">${formattedDate} - ${formattedTime}</span>
                     </div>
                     <div>
-                        <button class="edit-btn" data-index="${index}"><img src="edit.svg" alt="Edit"></button>
-                        <button class="delete-btn" data-index="${index}"><img src="delete.svg" alt="Delete"></button>
+                        <button class="edit-btn" data-index="${originalIndex}"><img src="edit.svg" alt="Edit"></button>
+                        <button class="delete-btn" data-index="${originalIndex}"><img src="delete.svg" alt="Delete"></button>
                     </div>
                 `;
                 appointmentList.appendChild(li);
@@ -51,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             modalTitle.textContent = 'Neuer Termin';
             addAppointmentForm.reset();
+            document.getElementById('appointment-date').value = new Date().toISOString().slice(0, 10);
         }
 
         if (addAppointmentModal.style.display === 'block') {
@@ -64,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     closeModalBtn.addEventListener('click', () => {
         if (addAppointmentModal.style.display === 'block') {
             addAppointmentModal.style.display = 'none';
+            addAppointmentForm.reset();
         }
     });
 
