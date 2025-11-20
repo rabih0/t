@@ -21,7 +21,10 @@
     <div id="app">
         <header class="app-header">
             <h1>Meine Termine</h1>
-            <button id="add-appointment-btn" class="add-btn"><img src="add.svg" alt="Add"></button>
+            <div>
+                <button id="manage-people-btn" class="add-btn"><img src="edit.svg" alt="Manage People"></button>
+                <button id="add-appointment-btn" class="add-btn"><img src="add.svg" alt="Add"></button>
+            </div>
         </header>
         <nav class="tab-bar">
             <button class="tab-btn active" data-tab="current">Aktuelle</button>
@@ -41,10 +44,30 @@
                 </header>
                 <form id="add-appointment-form" class="modal-form">
                     <input type="text" id="appointment-title" placeholder="Titel des Termins" required>
+                    <select id="appointment-person" required>
+                        <!-- People will be rendered here -->
+                    </select>
                     <input type="date" id="appointment-date" required>
                     <input type="time" id="appointment-time" required>
                     <button type="submit" class="save-btn">Speichern</button>
                 </form>
+            </div>
+        </div>
+        <div id="manage-people-modal" class="modal">
+            <div class="modal-content">
+                <header class="modal-header">
+                    <h2>Personen verwalten</h2>
+                    <button id="close-people-modal-btn" class="close-btn"><img src="close.svg" alt="Close"></button>
+                </header>
+                <div class="modal-form">
+                    <ul id="people-list" class="people-list">
+                        <!-- People will be rendered here -->
+                    </ul>
+                    <form id="add-person-form">
+                        <input type="text" id="person-name" placeholder="Neue Person hinzufügen" required>
+                        <button type="submit" class="save-btn">Hinzufügen</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
