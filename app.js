@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- State ---
     let appointments = JSON.parse(localStorage.getItem('familyAppointments')) || [];
-    let familyMembers = JSON.parse(localStorage.getItem('familyMembers')) || ['rabih alahmad', 'aischa almuschhan', 'nouralahuda alahmad', 'teim alahmad'];
+    let familyMembers = JSON.parse(localStorage.getItem('familyMembers')) || ['Rabih Alahmad', 'Aischa Almuschhan', 'Nouralahuda Alahmad', 'Taim Alahmad'];
     let currentTab = 'upcoming';
     let editMode = { active: false, appointmentId: null };
 
