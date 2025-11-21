@@ -1,254 +1,254 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const addAppointmentBtn = document.getElementById('add-appointment-btn');
-    const closeModalBtn = document.getElementById('close-modal-btn');
-    const addAppointmentModal = document.getElementById('add-appointment-modal');
-    const addAppointmentForm = document.getElementById('add-appointment-form');
-    const appointmentList = document.getElementById('appointment-list');
-    const tabBar = document.querySelector('.tab-bar');
-    // People / owner elements
-    const managePeopleBtn = document.getElementById('manage-people-btn');
-    const managePeopleModal = document.getElementById('manage-people-modal');
-    const closePeopleModalBtn = document.getElementById('close-people-modal-btn');
-    const peopleListEl = document.getElementById('people-list');
-    const addPersonForm = document.getElementById('add-person-form');
-    const personNameInput = document.getElementById('person-name');
-    const appointmentPersonSelect = document.getElementById('appointment-person');
+    // --- DOM Elements ---
+    const appointmentForm = document.getElementById('appointment-form');
+    const appointmentTitleInput = document.getElementById('appointment-title');
+    const appointmentDateInput = document.getElementById('appointment-date');
+    const appointmentTimeInput = document.getElementById('appointment-time');
+    const appointmentCategoryInput = document.getElementById('appointment-category');
+    const familyMemberSelect = document.getElementById('family-member-select');
+    
+    const addMemberBtn = document.getElementById('add-member-btn');
+    const addMemberForm = document.getElementById('add-member-form');
+    const newMemberNameInput = document.getElementById('new-member-name');
+    const cancelAddMemberBtn = document.getElementById('cancel-add-member');
 
-    let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-    // store family members / people (owners)
-    let people = JSON.parse(localStorage.getItem('people')) || [];
-    let currentTab = 'current';
+    const nextAppointmentSection = document.getElementById('next-appointment-section');
+    
+    const tabs = document.querySelector('.tabs');
+    const upcomingList = document.getElementById('upcoming-list');
+    const completedList = document.getElementById('completed-list');
 
-    const saveAppointments = () => {
-        localStorage.setItem('appointments', JSON.stringify(appointments));
+    // --- State ---
+    let appointments = JSON.parse(localStorage.getItem('familyAppointments')) || [];
+    let familyMembers = JSON.parse(localStorage.getItem('familyMembers')) || ['rabih alahmad', 'aischa almuschhan', 'nouralahuda alahmad', 'teim alahmad'];
+    let currentTab = 'upcoming';
+    let editMode = { active: false, appointmentId: null };
+
+    // --- Functions ---
+
+    const saveState = () => {
+        localStorage.setItem('familyAppointments', JSON.stringify(appointments));
+        localStorage.setItem('familyMembers', JSON.stringify(familyMembers));
     };
 
-    const savePeople = () => {
-        localStorage.setItem('people', JSON.stringify(people));
+    const renderFamilyMembers = () => {
+        familyMemberSelect.innerHTML = '<option value="" disabled selected>Person</option>';
+        familyMembers.forEach(member => {
+            const option = document.createElement('option');
+            option.value = member;
+            option.textContent = member;
+            familyMemberSelect.appendChild(option);
+        });
     };
 
-    tabBar.addEventListener('click', (e) => {
-        const tabBtn = e.target.closest('.tab-btn');
-        if (tabBtn) {
-            currentTab = tabBtn.dataset.tab;
-            document.querySelector('.tab-btn.active').classList.remove('active');
-            tabBtn.classList.add('active');
-            renderAppointments();
+    const getCategoryIcon = (category) => {
+        switch (category) {
+            case 'doctor': return 'bi-heart-pulse';
+            case 'school': return 'bi-book';
+            case 'leisure': return 'bi-dribbble';
+            default: return 'bi-calendar-event';
         }
-    });
-
+    };
 
     const renderAppointments = () => {
-        appointmentList.innerHTML = '';
-
-        // Sort appointments by date and time
-        appointments.sort((a, b) => {
-            const dateA = new Date(`${a.date}T${a.time}`);
-            const dateB = new Date(`${b.date}T${b.time}`);
-            return dateA - dateB;
-        });
+        upcomingList.innerHTML = '';
+        completedList.innerHTML = '';
 
         const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        
+        const upcoming = appointments.filter(a => !a.completed);
+        const completed = appointments.filter(a => a.completed);
 
-        const filteredAppointments = appointments.filter(appointment => {
-            const appointmentDate = new Date(appointment.date);
-            if (currentTab === 'previous') {
-                return appointmentDate < today;
-            } else if (currentTab === 'upcoming') {
-                return appointmentDate > today;
-            } else { // current
-                return appointmentDate.getTime() === today.getTime();
-            }
-        });
+        // Sort upcoming appointments by date
+        upcoming.sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
 
-        if (filteredAppointments.length === 0) {
-            const emptyMessage = document.createElement('li');
-            emptyMessage.textContent = 'Keine Termine';
-            emptyMessage.style.textAlign = 'center';
-            emptyMessage.style.color = 'var(--secondary-text-color)';
-            appointmentList.appendChild(emptyMessage);
+        if (upcoming.length === 0) {
+            upcomingList.innerHTML = '<li>Keine anstehenden Termine.</li>';
         } else {
-            filteredAppointments.forEach(appointment => {
-                const originalIndex = appointments.indexOf(appointment);
-                const li = document.createElement('li');
-                const date = new Date(`${appointment.date}T${appointment.time}`);
-                const formattedDate = date.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                const formattedTime = date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+            upcoming.forEach(app => upcomingList.appendChild(createAppointmentElement(app)));
+        }
 
-                li.innerHTML = `
-                    <div class="appointment-details">
-                        <span class="appointment-title">${appointment.title}</span>
-                        <span class="appointment-time">${formattedDate} - ${formattedTime}</span>
-                    </div>
-                    <div>
-                        <button class="edit-btn" data-index="${originalIndex}"><img src="edit.svg" alt="Edit"></button>
-                        <button class="delete-btn" data-index="${originalIndex}"><img src="delete.svg" alt="Delete"></button>
-                    </div>
-                `;
-                appointmentList.appendChild(li);
-            });
+        if (completed.length === 0) {
+            completedList.innerHTML = '<li>Keine erledigten Termine.</li>';
+        } else {
+            completed.forEach(app => completedList.appendChild(createAppointmentElement(app)));
+        }
+        
+        updateNextAppointmentCard(upcoming);
+    };
+
+    const createAppointmentElement = (appointment) => {
+        const item = document.createElement('li');
+        item.className = 'appointment-item';
+        item.dataset.id = appointment.id;
+
+        const date = new Date(`${appointment.date}T${appointment.time}`);
+        const formattedDate = date.toLocaleDateString('de-DE', { day: '2-digit', month: 'short' });
+        const formattedTime = date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
+        item.innerHTML = `
+            <div class="icon"><i class="bi ${getCategoryIcon(appointment.category)}"></i></div>
+            <div class="details">
+                <div class="title">${appointment.title}</div>
+                <div class="meta">${appointment.member} • ${formattedDate}, ${formattedTime} Uhr</div>
+            </div>
+            <div class="actions">
+                ${!appointment.completed ? `<button class="complete-btn"><i class="bi bi-check-lg"></i></button>` : ''}
+                <button class="edit-btn"><i class="bi bi-pencil"></i></button>
+                <button class="delete-btn"><i class="bi bi-trash"></i></button>
+            </div>
+        `;
+        return item;
+    };
+    
+    const updateNextAppointmentCard = (upcoming) => {
+        if (upcoming.length > 0) {
+            const nextApp = upcoming[0];
+            const date = new Date(`${nextApp.date}T${nextApp.time}`);
+            const formattedDate = date.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
+            nextAppointmentSection.innerHTML = `
+                <h3>Nächster Termin</h3>
+                <p>${nextApp.title} (${nextApp.member})</p>
+                <p>${formattedDate} um ${nextApp.time} Uhr</p>
+            `;
+        } else {
+            nextAppointmentSection.innerHTML = '<p>Keine anstehenden Termine.</p>';
         }
     };
 
-    // Render people list in manage people modal
-    const renderPeople = () => {
-        // list in modal
-        peopleListEl.innerHTML = '';
-        if (people.length === 0) {
-            const empty = document.createElement('li');
-            empty.textContent = 'Keine Personen';
-            empty.style.textAlign = 'center';
-            empty.style.color = 'var(--secondary-text-color)';
-            peopleListEl.appendChild(empty);
-        } else {
-            people.forEach((p, idx) => {
-                const li = document.createElement('li');
-                li.className = 'person-item';
-                li.innerHTML = `
-                    <span class="person-name">${p}</span>
-                    <button class="remove-person-btn" data-index="${idx}"><img src="delete.svg" alt="Remove"></button>
-                `;
-                peopleListEl.appendChild(li);
-            });
-        }
-
-        // render the select in appointment form
-        appointmentPersonSelect.innerHTML = '';
-        if (people.length === 0) {
-            const opt = document.createElement('option');
-            opt.value = '';
-            opt.textContent = 'Keine Person';
-            appointmentPersonSelect.appendChild(opt);
-            appointmentPersonSelect.required = false;
-        } else {
-            people.forEach(p => {
-                const opt = document.createElement('option');
-                opt.value = p;
-                opt.textContent = p;
-                appointmentPersonSelect.appendChild(opt);
-            });
-            appointmentPersonSelect.required = true;
-        }
-    };
-
-    const toggleModal = (mode = 'add', index = null) => {
-        const modalTitle = document.querySelector('#add-appointment-modal h2');
-        addAppointmentForm.dataset.mode = mode;
-        addAppointmentForm.dataset.index = index;
-
-        if (mode === 'edit') {
-            modalTitle.textContent = 'Termin bearbeiten';
-            const appointment = appointments[index];
-            document.getElementById('appointment-title').value = appointment.title;
-            document.getElementById('appointment-date').value = appointment.date;
-            document.getElementById('appointment-time').value = appointment.time;
-            // set selected person if present
-            if (appointment.person) {
-                appointmentPersonSelect.value = appointment.person;
-            }
-        } else {
-            modalTitle.textContent = 'Neuer Termin';
-            addAppointmentForm.reset();
-            document.getElementById('appointment-date').value = new Date().toISOString().slice(0, 10);
-        }
-
-        if (addAppointmentModal.style.display === 'block') {
-            addAppointmentModal.style.display = 'none';
-        } else {
-            addAppointmentModal.style.display = 'block';
-        }
-    };
-
-    addAppointmentBtn.addEventListener('click', () => toggleModal('add'));
-    closeModalBtn.addEventListener('click', () => {
-        if (addAppointmentModal.style.display === 'block') {
-            addAppointmentModal.style.display = 'none';
-            addAppointmentForm.reset();
-        }
-    });
-
-    addAppointmentForm.addEventListener('submit', (e) => {
+    const handleFormSubmit = (e) => {
         e.preventDefault();
-        const title = document.getElementById('appointment-title').value;
-        const person = document.getElementById('appointment-person').value;
-        const date = document.getElementById('appointment-date').value;
-        const time = document.getElementById('appointment-time').value;
-        const mode = addAppointmentForm.dataset.mode;
-        const index = addAppointmentForm.dataset.index;
+        const title = appointmentTitleInput.value.trim();
+        const date = appointmentDateInput.value;
+        const time = appointmentTimeInput.value;
+        const category = appointmentCategoryInput.value;
+        const member = familyMemberSelect.value;
 
-        if (mode === 'edit') {
-            appointments[index] = { title, date, time, person };
+        if (!title || !date || !time || !category || !member) return;
+
+        if (editMode.active) {
+            // Update existing appointment
+            const index = appointments.findIndex(a => a.id === editMode.appointmentId);
+            if (index > -1) {
+                appointments[index] = { ...appointments[index], title, date, time, category, member };
+            }
+            editMode = { active: false, appointmentId: null };
+            appointmentForm.querySelector('.add-btn').textContent = 'Termin hinzufügen';
         } else {
-            appointments.push({ title, date, time, person });
+            // Add new appointment
+            const newAppointment = {
+                id: Date.now(),
+                title,
+                date,
+                time,
+                category,
+                member,
+                completed: false,
+            };
+            appointments.push(newAppointment);
         }
 
-        saveAppointments();
+        saveState();
         renderAppointments();
-        if (addAppointmentModal.style.display === 'block') {
-            addAppointmentModal.style.display = 'none';
+        appointmentForm.reset();
+        setDefaultDateTime();
+    };
+
+    const handleListClick = (e) => {
+        const target = e.target;
+        const item = target.closest('.appointment-item');
+        if (!item) return;
+        const id = Number(item.dataset.id);
+
+        if (target.closest('.delete-btn')) {
+            appointments = appointments.filter(a => a.id !== id);
+        } else if (target.closest('.complete-btn')) {
+            const index = appointments.findIndex(a => a.id === id);
+            if (index > -1) appointments[index].completed = true;
+        } else if (target.closest('.edit-btn')) {
+            const appToEdit = appointments.find(a => a.id === id);
+            if (appToEdit) {
+                appointmentTitleInput.value = appToEdit.title;
+                appointmentDateInput.value = appToEdit.date;
+                appointmentTimeInput.value = appToEdit.time;
+                appointmentCategoryInput.value = appToEdit.category;
+                familyMemberSelect.value = appToEdit.member;
+                
+                editMode = { active: true, appointmentId: id };
+                appointmentForm.querySelector('.add-btn').textContent = 'Termin speichern';
+                appointmentTitleInput.focus();
+            }
+            return; // Prevent re-rendering just yet
         }
-        addAppointmentForm.reset();
-    });
+        
+        saveState();
+        renderAppointments();
+    };
 
-    appointmentList.addEventListener('click', (e) => {
-        const deleteBtn = e.target.closest('.delete-btn');
-        const editBtn = e.target.closest('.edit-btn');
+    const handleTabClick = (e) => {
+        const target = e.target.closest('.tab-btn');
+        if (!target) return;
 
-        if (deleteBtn) {
-            const index = deleteBtn.dataset.index;
-            appointments.splice(index, 1);
-            saveAppointments();
-            renderAppointments();
-        } else if (editBtn) {
-            const index = editBtn.dataset.index;
-            toggleModal('edit', index);
-        }
-    });
+        document.querySelector('.tab-btn.active').classList.remove('active');
+        target.classList.add('active');
+        
+        currentTab = target.dataset.tab;
 
-    renderAppointments();
-    // people management wiring
-    managePeopleBtn.addEventListener('click', () => {
-        if (managePeopleModal.style.display === 'block') {
-            managePeopleModal.style.display = 'none';
+        if (currentTab === 'upcoming') {
+            upcomingList.classList.remove('hidden');
+            completedList.classList.add('hidden');
         } else {
-            renderPeople();
-            managePeopleModal.style.display = 'block';
+            upcomingList.classList.add('hidden');
+            completedList.classList.remove('hidden');
         }
-    });
+    };
 
-    closePeopleModalBtn.addEventListener('click', () => {
-        if (managePeopleModal.style.display === 'block') {
-            managePeopleModal.style.display = 'none';
-        }
-    });
-
-    addPersonForm.addEventListener('submit', (e) => {
+    const handleAddMember = (e) => {
         e.preventDefault();
-        const name = personNameInput.value.trim();
-        if (!name) return;
-        people.push(name);
-        savePeople();
-        personNameInput.value = '';
-        renderPeople();
-    });
-
-    // handle remove person buttons using event delegation
-    peopleListEl.addEventListener('click', (e) => {
-        const btn = e.target.closest('.remove-person-btn');
-        if (!btn) return;
-        const idx = parseInt(btn.dataset.index, 10);
-        if (!Number.isNaN(idx)) {
-            // remove any appointments referencing this person
-            const removed = people.splice(idx, 1)[0];
-            appointments = appointments.map(a => a.person === removed ? { ...a, person: '' } : a);
-            savePeople();
-            saveAppointments();
-            renderPeople();
-            renderAppointments();
+        const newName = newMemberNameInput.value.trim();
+        if (newName && !familyMembers.includes(newName)) {
+            familyMembers.push(newName);
+            saveState();
+            renderFamilyMembers();
+            familyMemberSelect.value = newName; // Select the new member
         }
+        newMemberNameInput.value = '';
+        addMemberForm.classList.add('hidden');
+        appointmentForm.classList.remove('hidden');
+    };
+
+    const setDefaultDateTime = () => {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        appointmentDateInput.value = now.toISOString().slice(0,10);
+        appointmentTimeInput.value = now.toTimeString().slice(0,5);
+    };
+
+    // --- Event Listeners ---
+    appointmentForm.addEventListener('submit', handleFormSubmit);
+    upcomingList.addEventListener('click', handleListClick);
+    completedList.addEventListener('click', handleListClick);
+    tabs.addEventListener('click', handleTabClick);
+
+    addMemberBtn.addEventListener('click', () => {
+        addMemberForm.classList.remove('hidden');
+        appointmentForm.classList.add('hidden');
+        newMemberNameInput.focus();
     });
 
-    // initial render of people select
-    renderPeople();
+    cancelAddMemberBtn.addEventListener('click', () => {
+        addMemberForm.classList.add('hidden');
+        appointmentForm.classList.remove('hidden');
+    });
+
+    addMemberForm.addEventListener('submit', handleAddMember);
+
+    // --- Initialisation ---
+    const init = () => {
+        renderFamilyMembers();
+        renderAppointments();
+        setDefaultDateTime();
+    };
+
+    init();
 });

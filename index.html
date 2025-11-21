@@ -1,76 +1,81 @@
 <!DOCTYPE html>
-<html lang="de" dir="ltr">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Meine Termine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Familien Planer</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="icon-180x180.png" sizes="180x180">
-    <link rel="icon" type="image/png" href="icon-192x192.png" sizes="192x192">
-    <link rel="icon" type="image/png" href="icon-512x512.png" sizes="512x512">
-    <link rel="apple-touch-icon" href="icon-1024x1024.png" sizes="1024x1024">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <!-- Icons from Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body>
-    <div id="app">
-        <header class="app-header">
-            <h1>Meine Termine</h1>
-            <div>
-                <button id="manage-people-btn" class="add-btn"><img src="edit.svg" alt="Manage People"></button>
-                <button id="add-appointment-btn" class="add-btn"><img src="add.svg" alt="Add"></button>
-            </div>
+    <div class="blob-container">
+        <div class="blob blob-gold"></div>
+        <div class="blob blob-rose"></div>
+    </div>
+
+    <main class="container">
+        <header>
+            <h1>Familien Planer</h1>
         </header>
-        <nav class="tab-bar">
-            <button class="tab-btn active" data-tab="current">Aktuelle</button>
-            <button class="tab-btn" data-tab="upcoming">Zukünftige</button>
-            <button class="tab-btn" data-tab="previous">Vergangene</button>
-        </nav>
-        <main class="app-main">
-            <ul id="appointment-list" class="appointment-list">
-                <!-- Appointments will be rendered here -->
-            </ul>
-        </main>
-        <div id="add-appointment-modal" class="modal">
-            <div class="modal-content">
-                <header class="modal-header">
-                    <h2></h2>
-                    <button id="close-modal-btn" class="close-btn"><img src="close.svg" alt="Close"></button>
-                </header>
-                <form id="add-appointment-form" class="modal-form">
-                    <input type="text" id="appointment-title" placeholder="Titel des Termins" required>
-                    <select id="appointment-person" required>
-                        <!-- People will be rendered here -->
-                    </select>
+
+        <section id="next-appointment-section" class="next-appointment-card">
+            <!-- Next appointment will be dynamically inserted here -->
+            <p>Keine anstehenden Termine.</p>
+        </section>
+
+        <section class="input-form-section">
+            <form id="appointment-form">
+                <div class="form-row">
+                    <input type="text" id="appointment-title" placeholder="Neuer Termin..." required autocomplete="off">
+                </div>
+                <div class="form-row">
                     <input type="date" id="appointment-date" required>
                     <input type="time" id="appointment-time" required>
-                    <button type="submit" class="save-btn">Speichern</button>
-                </form>
-            </div>
-        </div>
-        <div id="manage-people-modal" class="modal">
-            <div class="modal-content">
-                <header class="modal-header">
-                    <h2>Personen verwalten</h2>
-                    <button id="close-people-modal-btn" class="close-btn"><img src="close.svg" alt="Close"></button>
-                </header>
-                <div class="modal-form">
-                    <ul id="people-list" class="people-list">
-                        <!-- People will be rendered here -->
-                    </ul>
-                    <form id="add-person-form">
-                        <input type="text" id="person-name" placeholder="Neue Person hinzufügen" required>
-                        <button type="submit" class="save-btn">Hinzufügen</button>
-                    </form>
                 </div>
+                <div class="form-row">
+                    <select id="appointment-category" required>
+                        <option value="default" disabled selected>Kategorie</option>
+                        <option value="doctor">Arzt</option>
+                        <option value="school">Schule</option>
+                        <option value="leisure">Freizeit</option>
+                        <option value="other">Sonstiges</option>
+                    </select>
+                </div>
+                <div class="form-row member-row">
+                    <select id="family-member-select" required>
+                        <option value="" disabled selected>Person</option>
+                        <!-- Family members will be dynamically inserted here -->
+                    </select>
+                    <button type="button" id="add-member-btn" class="icon-btn">+</button>
+                </div>
+                <button type="submit" class="add-btn">Termin hinzufügen</button>
+            </form>
+            <form id="add-member-form" class="hidden">
+                <input type="text" id="new-member-name" placeholder="Name der Person">
+                <button type="submit">Hinzufügen</button>
+                <button type="button" id="cancel-add-member">Abbrechen</button>
+            </form>
+        </section>
+
+        <section class="list-section">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="upcoming">Anstehend</button>
+                <button class="tab-btn" data-tab="completed">Erledigt</button>
             </div>
-        </div>
-    </div>
+            <ul id="upcoming-list" class="appointment-list">
+                <!-- Upcoming appointments will be dynamically inserted here -->
+            </ul>
+            <ul id="completed-list" class="appointment-list hidden">
+                <!-- Completed appointments will be dynamically inserted here -->
+            </ul>
+        </section>
+    </main>
+
     <script src="app.js"></script>
 </body>
 </html>
