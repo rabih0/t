@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Familien Planer</title>
+    <title>Familienplaner</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&display=swap" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#007AFF">
+    <meta name="theme-color" content="#1c1917">
     <meta name="apple-mobile-web-app-title" content="Termine">
     <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180x180.png">
     <link rel="icon" sizes="192x192" href="icons/icon-192.png" type="image/png">
@@ -25,7 +25,8 @@
 
     <main class="container">
         <header>
-            <h1>Familien Planer</h1>
+            <h1>Familienplaner</h1>
+            <div id="datetime"></div>
         </header>
 
         <section id="next-appointment-section" class="next-appointment-card">
@@ -72,6 +73,10 @@
         </section>
 
         <section class="list-section">
+            <div class="search-wrapper">
+                <i class="bi bi-search"></i>
+                <input type="text" id="search-input" placeholder="Termine suchen..." autocomplete="off">
+            </div>
             <div class="tabs">
                 <button class="tab-btn active" data-tab="upcoming">Anstehend</button>
                 <button class="tab-btn" data-tab="work">Arbeit</button>

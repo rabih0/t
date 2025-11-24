@@ -7,14 +7,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const appointmentCategoryInput = document.getElementById('appointment-category');
     const appointmentNotesInput = document.getElementById('appointment-notes');
     const familyMemberSelect = document.getElementById('family-member-select');
-    
+    const datetimeDiv = document.getElementById('datetime');
+    const searchInput = document.getElementById('search-input');
+
     const addMemberBtn = document.getElementById('add-member-btn');
     const addMemberForm = document.getElementById('add-member-form');
     const newMemberNameInput = document.getElementById('new-member-name');
     const cancelAddMemberBtn = document.getElementById('cancel-add-member');
 
     const nextAppointmentSection = document.getElementById('next-appointment-section');
-    
+
     const tabs = document.querySelector('.tabs');
     const upcomingList = document.getElementById('upcoming-list');
     const workList = document.getElementById('work-list');
@@ -31,6 +33,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let editMode = { active: false, appointmentId: null };
 
     // --- Functions ---
+
+    const updateDateTime = () => {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        if (datetimeDiv) {
+            datetimeDiv.textContent = now.toLocaleDateString('de-DE', options);
+        }
+    };
 
     const saveState = () => {
         localStorage.setItem('familyAppointments', JSON.stringify(appointments));
@@ -57,41 +67,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const renderAppointments = () => {
+    const renderAppointments = (searchTerm = '') => {
         upcomingList.innerHTML = '';
         workList.innerHTML = '';
         completedList.innerHTML = '';
 
-        const now = new Date();
-        
-        const upcoming = appointments.filter(a => !a.completed && a.category !== 'work');
-        const work = appointments.filter(a => !a.completed && a.category === 'work');
-        const completed = appointments.filter(a => a.completed);
+        let filteredAppointments = appointments;
+        if (searchTerm) {
+            const lowercasedTerm = searchTerm.toLowerCase();
+            filteredAppointments = appointments.filter(app => 
+                app.title.toLowerCase().includes(lowercasedTerm) ||
+                app.member.toLowerCase().includes(lowercasedTerm) ||
+                (app.notes && app.notes.toLowerCase().includes(lowercasedTerm))
+            );
+        }
+
+        const upcoming = filteredAppointments.filter(a => !a.completed && a.category !== 'work');
+        const work = filteredAppointments.filter(a => !a.completed && a.category === 'work');
+        const completed = filteredAppointments.filter(a => a.completed);
 
         // Sort upcoming appointments by date
         upcoming.sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
         work.sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
 
         if (upcoming.length === 0) {
-            upcomingList.innerHTML = '<li>Keine anstehenden Termine.</li>';
+            upcomingList.innerHTML = '<li>Keine passenden Termine gefunden.</li>';
         } else {
             upcoming.forEach(app => upcomingList.appendChild(createAppointmentElement(app)));
         }
 
         if (work.length === 0) {
-            workList.innerHTML = '<li>Keine anstehenden Arbeitstermine.</li>';
+            workList.innerHTML = '<li>Keine passenden Termine gefunden.</li>';
         } else {
             work.forEach(app => workList.appendChild(createAppointmentElement(app)));
         }
 
         if (completed.length === 0) {
-            completedList.innerHTML = '<li>Keine erledigten Termine.</li>';
+            completedList.innerHTML = '<li>Keine passenden Termine gefunden.</li>';
         } else {
             completed.forEach(app => completedList.appendChild(createAppointmentElement(app)));
         }
-        
-        updateNextAppointmentCard(upcoming);
+
+        // The next appointment card should not be affected by search
+        const allUpcoming = appointments.filter(a => !a.completed).sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+        updateNextAppointmentCard(allUpcoming);
     };
+
 
     const createAppointmentElement = (appointment) => {
         const item = document.createElement('li');
@@ -116,12 +137,10 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         return item;
     };
-    
-    const updateNextAppointmentCard = (upcoming) => {
-        const allUpcoming = appointments.filter(a => !a.completed).sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
 
-        if (allUpcoming.length > 0) {
-            const nextApp = allUpcoming[0];
+    const updateNextAppointmentCard = (upcoming) => {
+        if (upcoming.length > 0) {
+            const nextApp = upcoming[0];
             const date = new Date(`${nextApp.date}T${nextApp.time}`);
             const formattedDate = date.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
             nextAppointmentSection.innerHTML = `
@@ -169,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         saveState();
-        renderAppointments();
+        renderAppointments(searchInput.value);
         appointmentForm.reset();
         setDefaultDateTime();
     };
@@ -181,14 +200,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const id = Number(item.dataset.id);
 
         if (target.closest('.delete-btn')) {
-            appointments = appointments.filter(a => a.id !== id);
-            saveState();
-            renderAppointments();
+            if (confirm('Sind Sie sicher, dass Sie diesen Termin löschen möchten?')) {
+                appointments = appointments.filter(a => a.id !== id);
+                saveState();
+                renderAppointments(searchInput.value);
+            }
         } else if (target.closest('.complete-btn')) {
-            const index = appointments.findIndex(a => a.id === id);
-            if (index > -1) appointments[index].completed = true;
-            saveState();
-            renderAppointments();
+            if (confirm('Sind Sie sicher, dass Sie diesen Termin als erledigt markieren möchten?')) {
+                const index = appointments.findIndex(a => a.id === id);
+                if (index > -1) appointments[index].completed = true;
+                saveState();
+                renderAppointments(searchInput.value);
+            }
         } else if (target.closest('.edit-btn')) {
             const appToEdit = appointments.find(a => a.id === id);
             if (appToEdit) {
@@ -198,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 appointmentCategoryInput.value = appToEdit.category;
                 familyMemberSelect.value = appToEdit.member;
                 appointmentNotesInput.value = appToEdit.notes;
-                
+
                 editMode = { active: true, appointmentId: id };
                 appointmentForm.querySelector('.add-btn').textContent = 'Termin speichern';
                 appointmentTitleInput.focus();
@@ -252,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.querySelector('.tab-btn.active').classList.remove('active');
         target.classList.add('active');
-        
+
         currentTab = target.dataset.tab;
 
         upcomingList.classList.add('hidden');
@@ -295,6 +318,9 @@ document.addEventListener('DOMContentLoaded', () => {
     workList.addEventListener('click', handleListClick);
     completedList.addEventListener('click', handleListClick);
     tabs.addEventListener('click', handleTabClick);
+    searchInput.addEventListener('input', (e) => {
+        renderAppointments(e.target.value);
+    });
     modalCloseBtn.addEventListener('click', closeModal);
     modalOverlay.addEventListener('click', (e) => {
         if (e.target === modalOverlay) {
@@ -320,6 +346,8 @@ document.addEventListener('DOMContentLoaded', () => {
         renderFamilyMembers();
         renderAppointments();
         setDefaultDateTime();
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
     };
 
 

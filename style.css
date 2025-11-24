@@ -10,7 +10,7 @@
     --rose-color: #e11d48; /* Deep Rose for blob */
 
     /* Typography & Shapes */
-    --font-family: 'Outfit', 'Almarai', sans-serif;
+    --font-family: 'Outfit', sans-serif;
     --main-radius: 32px;
     --inner-radius: 16px;
     --small-radius: 12px;
@@ -32,6 +32,7 @@ body {
     min-height: 100vh;
     padding: 2rem 1rem;
     overflow-x: hidden;
+    direction: ltr;
 }
 
 /* Ambient Background Blobs */
@@ -85,6 +86,7 @@ body {
 .container {
     width: 100%;
     max-width: 420px;
+    height: calc(100vh - 4rem);
     background: var(--glass-surface);
     border: 1px solid var(--glass-border);
     border-radius: var(--main-radius);
@@ -205,6 +207,25 @@ input:focus, select:focus, textarea:focus {
     border-radius: var(--inner-radius);
 }
 
+/* Search Input */
+.search-wrapper {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.search-wrapper .bi-search {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none; /* Make icon non-interactive */
+}
+
+#search-input {
+    padding-left: 3rem; /* Make space for the icon */
+}
+
 /* Tabs & Lists */
 .tabs {
     display: flex;
@@ -233,6 +254,13 @@ input:focus, select:focus, textarea:focus {
     font-weight: 700;
 }
 
+.list-section {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Prevent flexbox overflow issues */
+}
+
 .appointment-list {
     list-style: none;
     padding: 0;
@@ -240,6 +268,26 @@ input:focus, select:focus, textarea:focus {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    overflow-y: auto;
+    padding-right: 0.5rem; /* Space for scrollbar */
+}
+
+/* Custom Scrollbar for Webkit Browsers */
+.appointment-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.appointment-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.appointment-list::-webkit-scrollbar-thumb {
+    background-color: var(--glass-border);
+    border-radius: 10px;
+}
+
+.appointment-list::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-secondary);
 }
 
 .appointment-item {
