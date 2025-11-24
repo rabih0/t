@@ -47,9 +47,13 @@
                         <option value="default" disabled selected>Kategorie</option>
                         <option value="doctor">Arzt</option>
                         <option value="school">Schule</option>
+                        <option value="work">Arbeit</option>
                         <option value="leisure">Freizeit</option>
                         <option value="other">Sonstiges</option>
                     </select>
+                </div>
+                <div class="form-row">
+                    <textarea id="appointment-notes" placeholder="Optionale Notizen..."></textarea>
                 </div>
                 <div class="form-row member-row">
                     <select id="family-member-select" required>
@@ -70,16 +74,29 @@
         <section class="list-section">
             <div class="tabs">
                 <button class="tab-btn active" data-tab="upcoming">Anstehend</button>
+                <button class="tab-btn" data-tab="work">Arbeit</button>
                 <button class="tab-btn" data-tab="completed">Erledigt</button>
             </div>
             <ul id="upcoming-list" class="appointment-list">
                 <!-- Upcoming appointments will be dynamically inserted here -->
+            </ul>
+            <ul id="work-list" class="appointment-list hidden">
+                <!-- Work appointments will be dynamically inserted here -->
             </ul>
             <ul id="completed-list" class="appointment-list hidden">
                 <!-- Completed appointments will be dynamically inserted here -->
             </ul>
         </section>
     </main>
+
+    <div id="appointment-details-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="modal-close-btn" class="modal-close-btn">&times;</button>
+            <div id="modal-body">
+                <!-- Appointment details will be injected here -->
+            </div>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>
