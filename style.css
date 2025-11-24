@@ -106,14 +106,16 @@ header {
 }
 
 header h1 {
-    font-size: 1.75rem;
-    font-weight: 700;
+    font-family: 'Great Vibes', cursive;
+    font-size: 3rem;
+    font-weight: 400;
     color: var(--gold-start);
 }
 
 #datetime {
+    font-family: 'Great Vibes', cursive;
     color: var(--gold-start);
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     margin-top: 0.25rem;
 }
 
