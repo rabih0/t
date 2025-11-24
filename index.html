@@ -59,35 +59,52 @@
                 </div>
                 <div class="form-row member-row">
                     <select id="family-member-select" required>
-                        <option value="" disabled selected>Person</option>
+                        <option value="" disabled selected>Person auswählen</option>
                         <!-- Family members will be dynamically inserted here -->
                     </select>
-                    <button type="button" id="add-member-btn" class="icon-btn"><img src="add.svg" alt="Add member"></button>
+                    <button type="button" id="add-member-btn" class="icon-btn">+</button>
                 </div>
+
                 <div id="customer-details-section" class="hidden">
                   <div class="form-row">
-                      <input type="text" id="customer-name" placeholder="الاسم">
+                      <input type="text" id="customer-name" placeholder="Name">
                   </div>
                   <div class="form-row">
-                      <input type="text" id="customer-address" placeholder="العنوان">
+                      <input type="text" id="customer-address" placeholder="Adresse">
                   </div>
                   <div class="form-row">
-                      <input type="tel" id="customer-phone" placeholder="الرقم">
+                      <input type="tel" id="customer-phone" placeholder="Telefonnummer">
                   </div>
                   <div class="form-row">
-                      <textarea id="customer-appointment-details" placeholder="تفاصيل الموعد"></textarea>
+                      <textarea id="customer-appointment-details" placeholder="Termindetails"></textarea>
                   </div>
                 </div>
                 <button type="submit" class="add-btn">Termin hinzufügen</button>
             </form>
+            
             <form id="add-member-form" class="hidden">
-                <input type="text" id="new-member-name" placeholder="Name der Person">
-                <button type="submit">Hinzufügen</button>
-                <button type="button" id="cancel-add-member">Abbrechen</button>
+                <input type="text" id="new-member-name" placeholder="Name der Person" required>
+                <div class="form-row">
+                    <button type="submit" class="add-btn">Person hinzufügen</button>
+                    <button type="button" id="cancel-add-member" class="add-btn" style="background: var(--brown-glass); color: var(--text-primary);">Abbrechen</button>
+                </div>
             </form>
+            
+            <div id="members-list" class="members-list hidden">
+                <h3>Personen verwalten</h3>
+                <div id="members-container">
+                    <!-- Members will be dynamically inserted here -->
+                </div>
+                <button type="button" id="manage-members-btn" class="add-btn" style="background: var(--brown-glass); color: var(--text-primary); margin-top: 0.5rem;">Schließen</button>
+            </div>
+
         </section>
 
         <section class="list-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 0.5rem;">
+                <a href="appointments.html" class="nav-btn">Alle Termine anzeigen</a>
+                <button id="show-members-btn" class="nav-btn" style="background: var(--brown-glass);">Personen verwalten</button>
+            </div>
             <div class="search-wrapper">
                 <i class="bi bi-search"></i>
                 <input type="text" id="search-input" placeholder="Termine suchen..." autocomplete="off">
@@ -118,6 +135,8 @@
         </div>
     </div>
 
+    <script src="navigation.js"></script>
+    <script src="members.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
