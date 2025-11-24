@@ -1,18 +1,18 @@
 {
-  "name": "مخطط العائلة - Familienplaner",
-  "short_name": "مخطط العائلة",
+  "name": "Familienplaner - مخطط العائلة",
+  "short_name": "Termine",
   "description": "تطبيق لإدارة مواعيد العائلة والأعمال الشخصية",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#1a0f0a",
-  "theme_color": "#ffd700",
+  "background_color": "#1c1612",
+  "theme_color": "#daa520",
   "categories": ["productivity", "lifestyle"],
   "lang": "ar",
   "dir": "ltr",
   "icons": [
     {
-      "src": "icons/icon-180.png",
+      "src": "icons/icon-180x180.png",
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "apple-touch-icon"
@@ -28,12 +28,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-1024x1024.png",
-      "sizes": "1024x1024",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ],
   "screenshots": [],
