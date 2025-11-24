@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1c1917">
     <meta name="apple-mobile-web-app-title" content="Termine">
@@ -61,7 +62,21 @@
                         <option value="" disabled selected>Person</option>
                         <!-- Family members will be dynamically inserted here -->
                     </select>
-                    <button type="button" id="add-member-btn" class="icon-btn">+</button>
+                    <button type="button" id="add-member-btn" class="icon-btn"><img src="add.svg" alt="Add member"></button>
+                </div>
+                <div id="customer-details-section" class="hidden">
+                  <div class="form-row">
+                      <input type="text" id="customer-name" placeholder="الاسم">
+                  </div>
+                  <div class="form-row">
+                      <input type="text" id="customer-address" placeholder="العنوان">
+                  </div>
+                  <div class="form-row">
+                      <input type="tel" id="customer-phone" placeholder="الرقم">
+                  </div>
+                  <div class="form-row">
+                      <textarea id="customer-appointment-details" placeholder="تفاصيل الموعد"></textarea>
+                  </div>
                 </div>
                 <button type="submit" class="add-btn">Termin hinzufügen</button>
             </form>
@@ -96,19 +111,10 @@
 
     <div id="appointment-details-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <button id="modal-close-btn" class="modal-close-btn">&times;</button>
+            <button id="modal-close-btn" class="modal-close-btn"><img src="close.svg" alt="Close"></button>
             <div id="modal-body">
                 <!-- Appointment details will be injected here -->
             </div>
-            <div id="customer-details-section" class="hidden">
-              <h4>Kundeninformationen</h4>
-              <form id="customer-form">
-                  <input type="text" id="customer-name" placeholder="Kundenname" required>
-                  <input type="text" id="customer-address" placeholder="Adresse">
-                  <input type="tel" id="customer-phone" placeholder="Telefonnummer">
-                  <button type="submit">Speichern</button>
-              </form>
-          </div>
         </div>
     </div>
 

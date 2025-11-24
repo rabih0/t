@@ -98,12 +98,23 @@ body {
 
 header {
     text-align: center;
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--inner-radius);
+    padding: 1rem;
+    box-shadow: 0 0 20px rgba(252, 211, 77, 0.1);
 }
 
 header h1 {
     font-size: 1.75rem;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--gold-start);
+}
+
+#datetime {
+    color: var(--gold-start);
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
 }
 
 /* Next Appointment Card */
@@ -114,10 +125,17 @@ header h1 {
     padding: 1.5rem;
     text-align: center;
     box-shadow: 0 0 40px rgba(252, 211, 77, 0.1); /* Gold/Amber inner glow */
+    font-style: italic;
+}
+
+.next-appointment-card h3 {
+    color: var(--gold-start);
+    margin-bottom: 0.5rem; /* Add some space below the title */
 }
 
 .next-appointment-card p {
-    color: var(--text-secondary);
+    color: var(--gold-start);
+    opacity: 0.8; /* Make it slightly less prominent */
 }
 
 /* Input Form */
@@ -173,7 +191,6 @@ input:focus, select:focus, textarea:focus {
     border-radius: var(--small-radius);
     border: 1px solid var(--glass-border);
     background: rgba(0, 0, 0, 0.2);
-    color: var(--text-primary);
     font-size: 1.5rem;
     cursor: pointer;
     transition: background 0.2s;
@@ -218,7 +235,7 @@ input:focus, select:focus, textarea:focus {
     top: 50%;
     left: 1rem;
     transform: translateY(-50%);
-    color: var(--text-secondary);
+    color: var(--gold-start);
     pointer-events: none; /* Make icon non-interactive */
 }
 
@@ -327,7 +344,7 @@ input:focus, select:focus, textarea:focus {
 .actions button {
     background: none;
     border: none;
-    color: var(--text-secondary);
+    color: var(--gold-start);
     font-size: 1.2rem;
     cursor: pointer;
     transition: color 0.2s;
@@ -372,7 +389,7 @@ input:focus, select:focus, textarea:focus {
     right: 1rem;
     background: none;
     border: none;
-    color: var(--text-secondary);
+    color: var(--gold-start);
     font-size: 1.8rem;
     line-height: 1;
     cursor: pointer;
@@ -400,6 +417,27 @@ input:focus, select:focus, textarea:focus {
 
 #modal-body .meta-item i {
     color: var(--gold-start);
+}
+
+#customer-details-section {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--inner-radius);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.customer-details-modal {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--glass-border);
+}
+
+.customer-details-modal h4 {
+    color: var(--gold-start);
+    margin-bottom: 1rem;
 }
 
 

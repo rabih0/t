@@ -25,6 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalOverlay = document.getElementById('appointment-details-modal');
     const modalCloseBtn = document.getElementById('modal-close-btn');
     const modalBody = document.getElementById('modal-body');
+    const customerDetailsSection = document.getElementById('customer-details-section');
+    const customerNameInput = document.getElementById('customer-name');
+    const customerAddressInput = document.getElementById('customer-address');
+    const customerPhoneInput = document.getElementById('customer-phone');
+    const customerAppointmentDetailsInput = document.getElementById('customer-appointment-details');
 
     // --- State ---
     let appointments = JSON.parse(localStorage.getItem('familyAppointments')) || [];
@@ -131,8 +136,8 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="actions">
                 ${!appointment.completed ? `<button class="complete-btn"><i class="bi bi-check-lg"></i></button>` : ''}
-                <button class="edit-btn"><i class="bi bi-pencil"></i></button>
-                <button class="delete-btn"><i class="bi bi-trash"></i></button>
+                <button class="edit-btn"><img src="edit.svg" alt="Edit"></button>
+                <button class="delete-btn"><img src="delete.svg" alt="Delete"></button>
             </div>
         `;
         return item;
@@ -164,11 +169,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!title || !date || !time || !category || !member) return;
 
+        let customerDetails = {};
+        if (category === 'work') {
+            customerDetails = {
+                name: customerNameInput.value.trim(),
+                address: customerAddressInput.value.trim(),
+                phone: customerPhoneInput.value.trim(),
+                details: customerAppointmentDetailsInput.value.trim()
+            };
+        }
+
         if (editMode.active) {
             // Update existing appointment
             const index = appointments.findIndex(a => a.id === editMode.appointmentId);
             if (index > -1) {
-                appointments[index] = { ...appointments[index], title, date, time, category, member, notes };
+                appointments[index] = { ...appointments[index], title, date, time, category, member, notes, customerDetails };
             }
             editMode = { active: false, appointmentId: null };
             appointmentForm.querySelector('.add-btn').textContent = 'Termin hinzufügen';
@@ -183,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 member,
                 notes,
                 completed: false,
+                customerDetails
             };
             appointments.push(newAppointment);
         }
@@ -190,6 +206,11 @@ document.addEventListener('DOMContentLoaded', () => {
         saveState();
         renderAppointments(searchInput.value);
         appointmentForm.reset();
+        customerNameInput.value = '';
+        customerAddressInput.value = '';
+        customerPhoneInput.value = '';
+        customerAppointmentDetailsInput.value = '';
+        customerDetailsSection.classList.add('hidden');
         setDefaultDateTime();
     };
 
@@ -222,6 +243,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 familyMemberSelect.value = appToEdit.member;
                 appointmentNotesInput.value = appToEdit.notes;
 
+                if (appToEdit.category === 'work' && appToEdit.customerDetails) {
+                    customerNameInput.value = appToEdit.customerDetails.name || '';
+                    customerAddressInput.value = appToEdit.customerDetails.address || '';
+                    customerPhoneInput.value = appToEdit.customerDetails.phone || '';
+                    customerAppointmentDetailsInput.value = appToEdit.customerDetails.details || '';
+                    customerDetailsSection.classList.remove('hidden');
+                } else {
+                    customerDetailsSection.classList.add('hidden');
+                }
+
                 editMode = { active: true, appointmentId: id };
                 appointmentForm.querySelector('.add-btn').textContent = 'Termin speichern';
                 appointmentTitleInput.focus();
@@ -238,6 +269,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const date = new Date(`${appointment.date}T${appointment.time}`);
         const formattedDate = date.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
         const formattedTime = date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
+        let customerHtml = '';
+        if (appointment.category === 'work' && appointment.customerDetails) {
+            const address = appointment.customerDetails.address;
+            const phone = appointment.customerDetails.phone;
+
+            const addressHtml = address ? `<a href="https://www.google.com/maps?q=${encodeURIComponent(address)}" target="_blank" rel="noopener noreferrer">${address}</a>` : 'N/A';
+            const phoneHtml = phone ? `<a href="tel:${phone}">${phone}</a>` : 'N/A';
+
+            customerHtml = `
+                <div class="customer-details-modal">
+                    <h4>Kundeninformationen</h4>
+                    <p><strong>Name:</strong> ${appointment.customerDetails.name || 'N/A'}</p>
+                    <p><strong>Adresse:</strong> ${addressHtml}</p>
+                    <p><strong>Telefon:</strong> ${phoneHtml}</p>
+                    <p><strong>Details:</strong> ${appointment.customerDetails.details || 'N/A'}</p>
+                </div>
+            `;
+        }
 
         modalBody.innerHTML = `
             <h3>${appointment.title}</h3>
@@ -261,6 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h4>Notizen:</h4>
                 <p>${appointment.notes || 'Keine Notizen vorhanden.'}</p>
             </div>
+            ${customerHtml}
         `;
         modalOverlay.classList.remove('hidden');
     };
@@ -340,6 +391,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     addMemberForm.addEventListener('submit', handleAddMember);
+
+    appointmentCategoryInput.addEventListener('change', (e) => {
+        if (e.target.value === 'work') {
+            customerDetailsSection.classList.remove('hidden');
+        } else {
+            customerDetailsSection.classList.add('hidden');
+        }
+    });
 
     // --- Initialisation ---
     const init = () => {
