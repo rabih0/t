@@ -1,13 +1,13 @@
 :root {
     /* Color Palette */
-    --background: #1c1917; /* Warm Charcoal / Stone 900 */
-    --text-primary: #fafaf9; /* Cream White */
-    --text-secondary: #a8a29e; /* Muted Stone */
-    --glass-surface: rgba(255, 255, 255, 0.03);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --gold-start: #fcd34d;
-    --gold-end: #d97706;
-    --rose-color: #e11d48; /* Deep Rose for blob */
+    --background: #271701; /* Dark Bronze */
+    --text-primary: #d1c290; /* Pale Gold */
+    --text-secondary: #ae8910; /* Gold */
+    --glass-surface: rgba(119, 119, 50, 0.1); /* Transparent Gold */
+    --glass-border: rgba(212, 175, 55, 0.2); /* Transparent Gold */
+    --gold-start: #daaf04; /* Bright Gold */
+    --gold-end: #8f8465; /* Darker Gold */
+    --rose-color: #75550c; /* Dark Goldenrod */
 
     /* Typography & Shapes */
     --font-family: 'Outfit', sans-serif;
@@ -94,6 +94,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    backdrop-filter: blur(10px); /* Added for glassy effect */
 }
 
 header {
@@ -128,6 +129,7 @@ header h1 {
     text-align: center;
     box-shadow: 0 0 40px rgba(252, 211, 77, 0.1); /* Gold/Amber inner glow */
     font-style: italic;
+    backdrop-filter: blur(5px); /* Added for glassy effect */
 }
 
 .next-appointment-card h3 {
