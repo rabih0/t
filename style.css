@@ -1,13 +1,13 @@
 :root {
     /* Color Palette */
-    --background: #271701; /* Dark Bronze */
-    --text-primary: #d1c290; /* Pale Gold */
-    --text-secondary: #ae8910; /* Gold */
-    --glass-surface: rgba(119, 119, 50, 0.1); /* Transparent Gold */
-    --glass-border: rgba(212, 175, 55, 0.2); /* Transparent Gold */
-    --gold-start: #daaf04; /* Bright Gold */
-    --gold-end: #8f8465; /* Darker Gold */
-    --rose-color: #75550c; /* Dark Goldenrod */
+    --background: #110e0b; /* Dark Bronze */
+    --text-primary: #ecc43f; /* Pale Gold */
+    --text-secondary: #8f7317; /* Gold */
+    --glass-surface: rgba(187, 187, 54, 0.1); /* Transparent Gold */
+    --glass-border: rgba(239, 207, 101, 0.2); /* Transparent Gold */
+    --gold-start: #c49d02; /* Bright Gold */
+    --gold-end: #a6905c; /* Darker Gold */
+    --rose-color: #8c7130; /* Dark Goldenrod */
 
     /* Typography & Shapes */
     --font-family: 'Outfit', sans-serif;
