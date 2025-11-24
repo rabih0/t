@@ -1,9 +1,11 @@
 // Appointments Management System
 class AppointmentsManager {
     constructor() {
-        this.appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+        this.appointments = this.loadAppointments();
         this.currentTab = 'upcoming';
+        this.autoSaveInterval = null;
         this.init();
+        this.setupAutoSave();
     }
 
     init() {
@@ -87,31 +89,43 @@ class AppointmentsManager {
         }
 
         const appointment = {
-            id: Date.now(),
-            title,
+            id: Date.now() + Math.random(), // More unique ID
+            title: title.substring(0, 100), // Limit title length
             date,
             time,
             category,
-            notes,
+            notes: notes.substring(0, 500), // Limit notes length
             member,
             customer: {
-                name: customerName,
-                address: customerAddress,
-                phone: customerPhone,
-                details: customerDetails
+                name: customerName.substring(0, 100),
+                address: customerAddress.substring(0, 200),
+                phone: customerPhone.substring(0, 50),
+                details: customerDetails.substring(0, 500)
             },
             completed: false,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            lastModified: new Date().toISOString()
         };
 
-        this.appointments.push(appointment);
-        this.saveAppointments();
-        this.renderAppointments();
-        this.updateNextAppointment();
-        this.clearForm();
-        
-        // Show success message
-        this.showNotification('Termin erfolgreich hinzugefügt!');
+        // Validate appointment data
+        if (this.validateAppointment(appointment)) {
+            this.appointments.push(appointment);
+            
+            // Immediate save with validation
+            const saveSuccess = this.saveAppointments();
+            if (saveSuccess !== false) {
+                this.renderAppointments();
+                this.updateNextAppointment();
+                this.clearForm();
+                this.showNotification('Termin erfolgreich hinzugefügt!');
+            } else {
+                // Remove the appointment if save failed
+                this.appointments.pop();
+                this.showNotification('Fehler beim Speichern des Termins!');
+            }
+        } else {
+            this.showNotification('Ungültige Termindaten!');
+        }
     }
 
     clearForm() {
@@ -121,12 +135,28 @@ class AppointmentsManager {
     }
 
     deleteAppointment(id) {
-        if (confirm('Termin wirklich löschen?')) {
-            this.appointments = this.appointments.filter(apt => apt.id !== id);
-            this.saveAppointments();
-            this.renderAppointments();
-            this.updateNextAppointment();
-            this.showNotification('Termin gelöscht!');
+        const appointment = this.appointments.find(apt => apt.id == id);
+        if (!appointment) {
+            this.showNotification('Termin nicht gefunden!');
+            return;
+        }
+        
+        if (confirm(`Termin "${appointment.title}" wirklich löschen?\n\nDieser Vorgang kann nicht rückgängig gemacht werden.`)) {
+            // Create backup before deletion
+            const backup = [...this.appointments];
+            
+            this.appointments = this.appointments.filter(apt => apt.id != id);
+            
+            const saveSuccess = this.saveAppointments();
+            if (saveSuccess !== false) {
+                this.renderAppointments();
+                this.updateNextAppointment();
+                this.showNotification('Termin gelöscht!');
+            } else {
+                // Restore if save failed
+                this.appointments = backup;
+                this.showNotification('Fehler beim Löschen des Termins!');
+            }
         }
     }
 
@@ -419,8 +449,31 @@ class AppointmentsManager {
         });
     }
 
+    validateAppointment(appointment) {
+        // Check required fields
+        if (!appointment.title || !appointment.date || !appointment.time || 
+            !appointment.category || !appointment.member) {
+            return false;
+        }
+        
+        // Validate date format
+        const appointmentDate = new Date(`${appointment.date}T${appointment.time}`);
+        if (isNaN(appointmentDate.getTime())) {
+            return false;
+        }
+        
+        // Check if date is not too far in the past (more than 1 year)
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        if (appointmentDate < oneYearAgo) {
+            return false;
+        }
+        
+        return true;
+    }
+
     showNotification(message) {
-        // Simple notification - you can enhance this
+        // Enhanced notification with better styling
         const notification = document.createElement('div');
         notification.style.cssText = `
             position: fixed;
@@ -429,21 +482,137 @@ class AppointmentsManager {
             background: var(--glass-surface);
             border: 1px solid var(--glass-border);
             border-radius: var(--small-radius);
-            padding: 1rem;
+            padding: 1rem 1.5rem;
             color: var(--text-primary);
             z-index: 10000;
             backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            max-width: 300px;
+            word-wrap: break-word;
+            animation: slideIn 0.3s ease-out;
         `;
+        
+        // Add animation keyframes
+        if (!document.getElementById('notification-styles')) {
+            const style = document.createElement('style');
+            style.id = 'notification-styles';
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
         notification.textContent = message;
         document.body.appendChild(notification);
 
         setTimeout(() => {
-            notification.remove();
+            notification.style.animation = 'slideIn 0.3s ease-out reverse';
+            setTimeout(() => notification.remove(), 300);
         }, 3000);
     }
 
+    loadAppointments() {
+        try {
+            const saved = localStorage.getItem('appointments');
+            if (saved) {
+                const appointments = JSON.parse(saved);
+                // Validate data structure
+                if (Array.isArray(appointments)) {
+                    return appointments.filter(apt => apt && apt.id && apt.title);
+                }
+            }
+        } catch (error) {
+            console.error('Fehler beim Laden der Termine:', error);
+            this.showNotification('Fehler beim Laden der gespeicherten Termine');
+        }
+        return [];
+    }
+
     saveAppointments() {
-        localStorage.setItem('appointments', JSON.stringify(this.appointments));
+        try {
+            // Create backup before saving
+            const backup = localStorage.getItem('appointments');
+            if (backup) {
+                localStorage.setItem('appointments_backup', backup);
+            }
+            
+            // Validate data before saving
+            const validAppointments = this.appointments.filter(apt => this.validateAppointment(apt));
+            if (validAppointments.length !== this.appointments.length) {
+                console.warn(`${this.appointments.length - validAppointments.length} ungültige Termine entfernt`);
+                this.appointments = validAppointments;
+            }
+            
+            // Save current appointments
+            const dataToSave = JSON.stringify(this.appointments);
+            localStorage.setItem('appointments', dataToSave);
+            
+            // Verify the save was successful
+            const savedData = localStorage.getItem('appointments');
+            if (savedData !== dataToSave) {
+                throw new Error('Daten wurden nicht korrekt gespeichert');
+            }
+            
+            // Also save to sessionStorage as additional backup
+            sessionStorage.setItem('appointments_session', dataToSave);
+            
+            console.log(`${this.appointments.length} Termine erfolgreich gespeichert`);
+            return true;
+        } catch (error) {
+            console.error('Fehler beim Speichern der Termine:', error);
+            
+            // Check if it's a quota exceeded error
+            if (error.name === 'QuotaExceededError') {
+                this.showNotification('Speicher voll! Bitte löschen Sie alte Termine.');
+            } else {
+                this.showNotification('Fehler beim Speichern! Bitte versuchen Sie es erneut.');
+            }
+            
+            // Try to restore from backup
+            this.restoreFromBackup();
+            return false;
+        }
+    }
+
+    restoreFromBackup() {
+        try {
+            const backup = localStorage.getItem('appointments_backup');
+            const sessionBackup = sessionStorage.getItem('appointments_session');
+            
+            if (sessionBackup) {
+                this.appointments = JSON.parse(sessionBackup);
+                this.showNotification('Termine aus Session-Backup wiederhergestellt');
+            } else if (backup) {
+                this.appointments = JSON.parse(backup);
+                this.showNotification('Termine aus Backup wiederhergestellt');
+            }
+        } catch (error) {
+            console.error('Fehler beim Wiederherstellen:', error);
+        }
+    }
+
+    setupAutoSave() {
+        // Auto-save every 30 seconds
+        this.autoSaveInterval = setInterval(() => {
+            if (this.appointments.length > 0) {
+                this.saveAppointments();
+            }
+        }, 30000);
+        
+        // Save before page unload
+        window.addEventListener('beforeunload', () => {
+            this.saveAppointments();
+        });
+        
+        // Save when page becomes hidden (mobile app switching)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.saveAppointments();
+            }
+        });
     }
 }
 
