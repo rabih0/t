@@ -106,7 +106,7 @@ header {
 }
 
 header h1 {
-    font-family: 'Great Vibes', cursive;
+    font-family: "Bickham Script Pro", 'Great Vibes', cursive;
     font-size: 3rem;
     font-weight: 400;
     color: var(--gold-start);
