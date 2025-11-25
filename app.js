@@ -81,7 +81,7 @@ class AppointmentsManager {
         const customerName = document.getElementById('customer-name').value.trim();
         const customerAddress = document.getElementById('customer-address').value.trim();
         const customerPhone = document.getElementById('customer-phone').value.trim();
-        const customerDetails = document.getElementById('customer-appointment-details').value.trim();
+        const customerDetails = '';
 
         if (!title || !date || !time || !category || !member) {
             alert('Bitte füllen Sie alle Pflichtfelder aus.');

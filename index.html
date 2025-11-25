@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Familienplaner</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#daa520">
     <meta name="apple-mobile-web-app-title" content="Termine">
     <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180x180.png">
@@ -58,13 +58,6 @@
                 <div class="form-row">
                     <textarea id="appointment-notes" placeholder="Optionale Notizen..."></textarea>
                 </div>
-                <div class="form-row member-row">
-                    <select id="family-member-select" required>
-                        <option value="" disabled selected>Person auswählen</option>
-                        <!-- Family members will be dynamically inserted here -->
-                    </select>
-                    <button type="button" id="add-member-btn" class="icon-btn">+</button>
-                </div>
 
                 <div id="work-details" class="work-details hidden">
                     <div class="form-row">
@@ -76,6 +69,14 @@
                     <div class="form-row">
                         <input type="text" id="customer-address" placeholder="Adresse" autocomplete="off">
                     </div>
+                </div>
+
+                <div class="form-row member-row">
+                    <select id="family-member-select" required>
+                        <option value="" disabled selected>Person auswählen</option>
+                        <!-- Family members will be dynamically inserted here -->
+                    </select>
+                    <button type="button" id="add-member-btn" class="icon-btn">+</button>
                 </div>
                 <button type="submit" class="add-btn">Termin hinzufügen</button>
             </form>
@@ -132,7 +133,7 @@
         </div>
     </div>
 
-    <script src="members.js"></script>
-    <script src="app.js"></script>
+    <script src="./members.js"></script>
+    <script src="./app.js"></script>
 </body>
 </html>
