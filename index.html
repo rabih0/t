@@ -10,12 +10,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1c1917">
+    <meta name="theme-color" content="#daa520">
     <meta name="apple-mobile-web-app-title" content="Termine">
-    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180x180.png">
-    <link rel="icon" sizes="192x192" href="icons/icon-192x192.png" type="image/png">
-    <link rel="icon" sizes="512x512" href="icons/icon-512x512.png" type="image/png">
-    <link rel="shortcut icon" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180x180.png">
+    <link rel="icon" sizes="192x192" href="./icons/icon-192x192.png" type="image/png">
+    <link rel="icon" sizes="512x512" href="./icons/icon-512x512.png" type="image/png">
+    <link rel="shortcut icon" href="./icons/icon-192x192.png">
     <!-- Icons from Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
@@ -66,19 +66,16 @@
                     <button type="button" id="add-member-btn" class="icon-btn">+</button>
                 </div>
 
-                <div id="customer-details-section" class="hidden">
-                  <div class="form-row">
-                      <input type="text" id="customer-name" placeholder="Name">
-                  </div>
-                  <div class="form-row">
-                      <input type="text" id="customer-address" placeholder="Adresse">
-                  </div>
-                  <div class="form-row">
-                      <input type="tel" id="customer-phone" placeholder="Telefonnummer">
-                  </div>
-                  <div class="form-row">
-                      <textarea id="customer-appointment-details" placeholder="Termindetails"></textarea>
-                  </div>
+                <div id="work-details" class="work-details hidden">
+                    <div class="form-row">
+                        <input type="text" id="customer-name" placeholder="Kundenname" autocomplete="off">
+                    </div>
+                    <div class="form-row">
+                        <input type="tel" id="customer-phone" placeholder="Telefonnummer" autocomplete="off">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="customer-address" placeholder="Adresse" autocomplete="off">
+                    </div>
                 </div>
                 <button type="submit" class="add-btn">Termin hinzufügen</button>
             </form>
@@ -102,9 +99,8 @@
         </section>
 
         <section class="list-section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 0.5rem;">
-                <a href="appointments.html" class="nav-btn">Alle Termine anzeigen</a>
-                <button id="show-members-btn" class="nav-btn" style="background: var(--brown-glass);">Personen verwalten</button>
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 1rem; gap: 0.5rem;">
+                <button id="show-members-btn" class="nav-btn" style="background: var(--brown-glass); font-size: 1.1rem; font-weight: 600;">Personen verwalten</button>
             </div>
             <div class="search-wrapper">
                 <i class="bi bi-search"></i>
@@ -129,14 +125,13 @@
 
     <div id="appointment-details-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <button id="modal-close-btn" class="modal-close-btn"><img src="close.svg" alt="Close"></button>
+            <button id="modal-close-btn" class="modal-close-btn">×</button>
             <div id="modal-body">
                 <!-- Appointment details will be injected here -->
             </div>
         </div>
     </div>
 
-    <script src="navigation.js"></script>
     <script src="members.js"></script>
     <script src="app.js"></script>
 </body>
