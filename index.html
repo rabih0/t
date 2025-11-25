@@ -69,6 +69,10 @@
                     <div class="form-row">
                         <input type="text" id="customer-address" placeholder="Adresse" autocomplete="off">
                     </div>
+                    <div class="form-row">
+                        <input type="text" id="customer-postal-code" placeholder="Postleitzahl" autocomplete="off">
+                        <input type="text" id="customer-city" placeholder="Stadt" autocomplete="off">
+                    </div>
                 </div>
 
                 <div class="form-row member-row">
@@ -100,7 +104,8 @@
         </section>
 
         <section class="list-section">
-            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 1rem; gap: 0.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 0.5rem;">
+                <button id="show-all-appointments-btn" class="nav-btn" style="font-size: 1.1rem; font-weight: 600;">Alle Termine</button>
                 <button id="show-members-btn" class="nav-btn" style="background: var(--brown-glass); font-size: 1.1rem; font-weight: 600;">Personen verwalten</button>
             </div>
             <div class="search-wrapper">
@@ -129,6 +134,30 @@
             <button id="modal-close-btn" class="modal-close-btn">×</button>
             <div id="modal-body">
                 <!-- Appointment details will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <div id="all-appointments-modal" class="modal-overlay hidden">
+        <div class="modal-content all-appointments-modal">
+            <button id="all-appointments-close-btn" class="modal-close-btn">×</button>
+            <div class="modal-header">
+                <h2>Alle Termine</h2>
+            </div>
+            <div class="modal-search">
+                <div class="search-wrapper">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="modal-search-input" placeholder="Termine suchen..." autocomplete="off">
+                </div>
+            </div>
+            <div class="modal-tabs">
+                <button class="modal-tab-btn active" data-modal-tab="all">Alle</button>
+                <button class="modal-tab-btn" data-modal-tab="upcoming">Anstehend</button>
+                <button class="modal-tab-btn" data-modal-tab="work">Arbeit</button>
+                <button class="modal-tab-btn" data-modal-tab="completed">Erledigt</button>
+            </div>
+            <div id="modal-appointments-container" class="modal-appointments-list">
+                <!-- All appointments will be displayed here -->
             </div>
         </div>
     </div>

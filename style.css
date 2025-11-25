@@ -609,6 +609,18 @@ input:focus, select:focus, textarea:focus {
     margin-bottom: 1rem;
 }
 
+.clickable-phone, .clickable-address {
+    cursor: pointer;
+    transition: background 0.2s;
+    border-radius: var(--small-radius);
+    padding: 0.25rem;
+    margin: -0.25rem;
+}
+
+.clickable-phone:hover, .clickable-address:hover {
+    background: var(--brown-glass);
+}
+
 
 /* Mobile Home Screen & PWA Optimizations */
 @media (display-mode: standalone) {
@@ -644,6 +656,79 @@ body {
     .container {
         padding-top: max(env(safe-area-inset-top), 1rem);
     }
+}
+
+/* All Appointments Modal */
+.all-appointments-modal {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: 600px;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--glass-border);
+    margin-bottom: 1rem;
+}
+
+.modal-header h2 {
+    color: var(--gold-start);
+    font-family: "Bickham Script Pro", 'Great Vibes', cursive;
+    font-size: 1.5rem;
+    text-align: center;
+    margin: 0;
+}
+
+.modal-search {
+    margin-bottom: 1rem;
+}
+
+.modal-tabs {
+    display: flex;
+    background: var(--brown-glass);
+    border-radius: var(--small-radius);
+    padding: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.modal-tab-btn {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.modal-tab-btn.active {
+    background: linear-gradient(45deg, var(--gold-start), var(--gold-end));
+    color: var(--background);
+    font-weight: 600;
+}
+
+.modal-appointments-list {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.modal-appointments-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-appointments-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.modal-appointments-list::-webkit-scrollbar-thumb {
+    background-color: var(--glass-border);
+    border-radius: 10px;
 }
 
 /* Utility Classes */

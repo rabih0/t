@@ -12,6 +12,8 @@ class AppointmentsManager {
         this.bindEvents();
         this.renderAppointments();
         this.updateNextAppointment();
+        this.updateDateTime();
+        this.startDateTimeUpdater();
     }
 
     bindEvents() {
@@ -36,6 +38,14 @@ class AppointmentsManager {
         if (searchInput) {
             searchInput.addEventListener('input', (e) => {
                 this.searchAppointments(e.target.value);
+            });
+        }
+
+        // Category change handler
+        const categorySelect = document.getElementById('appointment-category');
+        if (categorySelect) {
+            categorySelect.addEventListener('change', (e) => {
+                this.handleCategoryChange(e.target.value);
             });
         }
 
@@ -67,6 +77,47 @@ class AppointmentsManager {
                 }
             });
         }
+
+        // Show all appointments modal
+        const showAllAppointmentsBtn = document.getElementById('show-all-appointments-btn');
+        if (showAllAppointmentsBtn) {
+            showAllAppointmentsBtn.addEventListener('click', () => {
+                this.showAllAppointmentsModal();
+            });
+        }
+
+        // Close all appointments modal
+        const allAppointmentsCloseBtn = document.getElementById('all-appointments-close-btn');
+        if (allAppointmentsCloseBtn) {
+            allAppointmentsCloseBtn.addEventListener('click', () => {
+                this.closeAllAppointmentsModal();
+            });
+        }
+
+        // Modal tabs
+        document.querySelectorAll('.modal-tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.switchModalTab(e.target.dataset.modalTab);
+            });
+        });
+
+        // Modal search
+        const modalSearchInput = document.getElementById('modal-search-input');
+        if (modalSearchInput) {
+            modalSearchInput.addEventListener('input', (e) => {
+                this.searchModalAppointments(e.target.value);
+            });
+        }
+
+        // Click outside all appointments modal to close
+        const allAppointmentsModal = document.getElementById('all-appointments-modal');
+        if (allAppointmentsModal) {
+            allAppointmentsModal.addEventListener('click', (e) => {
+                if (e.target === allAppointmentsModal) {
+                    this.closeAllAppointmentsModal();
+                }
+            });
+        }
     }
 
     addAppointment() {
@@ -81,6 +132,8 @@ class AppointmentsManager {
         const customerName = document.getElementById('customer-name').value.trim();
         const customerAddress = document.getElementById('customer-address').value.trim();
         const customerPhone = document.getElementById('customer-phone').value.trim();
+        const customerPostalCode = document.getElementById('customer-postal-code').value.trim();
+        const customerCity = document.getElementById('customer-city').value.trim();
         const customerDetails = '';
 
         if (!title || !date || !time || !category || !member) {
@@ -100,6 +153,8 @@ class AppointmentsManager {
                 name: customerName.substring(0, 100),
                 address: customerAddress.substring(0, 200),
                 phone: customerPhone.substring(0, 50),
+                postalCode: customerPostalCode.substring(0, 20),
+                city: customerCity.substring(0, 100),
                 details: customerDetails.substring(0, 500)
             },
             completed: false,
@@ -339,10 +394,21 @@ class AppointmentsManager {
         modal.classList.remove('hidden');
     }
 
+    handleCategoryChange(category) {
+        const workDetails = document.getElementById('work-details');
+        if (category === 'work') {
+            workDetails.classList.remove('hidden');
+        } else {
+            workDetails.classList.add('hidden');
+        }
+    }
+
     renderCustomerDetails(customer) {
-        if (!customer.name && !customer.address && !customer.phone && !customer.details) {
+        if (!customer.name && !customer.address && !customer.phone && !customer.postalCode && !customer.city && !customer.details) {
             return '';
         }
+
+        const fullAddress = [customer.address, customer.postalCode, customer.city].filter(Boolean).join(', ');
 
         return `
             <div class="customer-details-modal">
@@ -353,16 +419,16 @@ class AppointmentsManager {
                         <span>${customer.name}</span>
                     </div>
                 ` : ''}
-                ${customer.address ? `
-                    <div class="meta-item">
-                        <i class="bi bi-geo-alt"></i>
-                        <span>${customer.address}</span>
+                ${customer.phone ? `
+                    <div class="meta-item clickable-phone" onclick="window.open('tel:${customer.phone}', '_self')">
+                        <i class="bi bi-telephone"></i>
+                        <span style="color: var(--gold-start); cursor: pointer; text-decoration: underline;">${customer.phone}</span>
                     </div>
                 ` : ''}
-                ${customer.phone ? `
-                    <div class="meta-item">
-                        <i class="bi bi-telephone"></i>
-                        <span>${customer.phone}</span>
+                ${fullAddress ? `
+                    <div class="meta-item clickable-address" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent(fullAddress)}', '_blank')">
+                        <i class="bi bi-geo-alt"></i>
+                        <span style="color: var(--gold-start); cursor: pointer; text-decoration: underline;">${fullAddress}</span>
                     </div>
                 ` : ''}
                 ${customer.details ? `
@@ -377,6 +443,130 @@ class AppointmentsManager {
 
     closeModal() {
         document.getElementById('appointment-details-modal').classList.add('hidden');
+    }
+
+    showAllAppointmentsModal() {
+        const modal = document.getElementById('all-appointments-modal');
+        modal.classList.remove('hidden');
+        this.currentModalTab = 'all';
+        this.renderModalAppointments();
+    }
+
+    closeAllAppointmentsModal() {
+        document.getElementById('all-appointments-modal').classList.add('hidden');
+    }
+
+    switchModalTab(tabName) {
+        this.currentModalTab = tabName;
+        
+        // Update modal tab buttons
+        document.querySelectorAll('.modal-tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-modal-tab="${tabName}"]`).classList.add('active');
+        
+        this.renderModalAppointments();
+    }
+
+    renderModalAppointments() {
+        const container = document.getElementById('modal-appointments-container');
+        container.innerHTML = '';
+
+        let appointmentsToShow = [];
+        const now = new Date();
+
+        switch (this.currentModalTab) {
+            case 'all':
+                appointmentsToShow = [...this.appointments];
+                break;
+            case 'upcoming':
+                appointmentsToShow = this.appointments.filter(apt => 
+                    !apt.completed && new Date(`${apt.date}T${apt.time}`) > now
+                );
+                break;
+            case 'work':
+                appointmentsToShow = this.appointments.filter(apt => 
+                    apt.category === 'work' && !apt.completed
+                );
+                break;
+            case 'completed':
+                appointmentsToShow = this.appointments.filter(apt => apt.completed);
+                break;
+        }
+
+        // Sort appointments by date
+        appointmentsToShow.sort((a, b) => 
+            new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`)
+        );
+
+        if (appointmentsToShow.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">Keine Termine vorhanden</p>';
+            return;
+        }
+
+        appointmentsToShow.forEach(appointment => {
+            const appointmentElement = this.createModalAppointmentElement(appointment);
+            container.appendChild(appointmentElement);
+        });
+    }
+
+    createModalAppointmentElement(appointment) {
+        const div = document.createElement('div');
+        div.className = 'appointment-item';
+        div.style.marginBottom = '0.5rem';
+        
+        const categoryIcons = {
+            doctor: '🏥',
+            school: '🎓',
+            work: '💼',
+            leisure: '🎯',
+            other: '📅'
+        };
+
+        const appointmentDate = new Date(`${appointment.date}T${appointment.time}`);
+        const formattedDate = appointmentDate.toLocaleDateString('de-DE', {
+            weekday: 'short',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+        const formattedTime = appointmentDate.toLocaleTimeString('de-DE', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        });
+
+        div.innerHTML = `
+            <div class="icon">${categoryIcons[appointment.category] || '📅'}</div>
+            <div class="details">
+                <div class="title">${appointment.title}</div>
+                <div class="meta">
+                    ${formattedDate} um ${formattedTime} • ${appointment.member}
+                    ${appointment.completed ? ' • Erledigt' : ''}
+                </div>
+            </div>
+            <div class="actions">
+                <button onclick="appointmentsManager.showAppointmentDetails(${appointment.id}); appointmentsManager.closeAllAppointmentsModal();" title="Details anzeigen">👁️</button>
+                <button onclick="appointmentsManager.toggleAppointmentStatus(${appointment.id}); appointmentsManager.renderModalAppointments();" title="${appointment.completed ? 'Als offen markieren' : 'Als erledigt markieren'}">
+                    ${appointment.completed ? '↩️' : '✅'}
+                </button>
+                <button onclick="appointmentsManager.deleteAppointment(${appointment.id}); appointmentsManager.renderModalAppointments();" class="delete-btn" title="Löschen">🗑️</button>
+            </div>
+        `;
+
+        return div;
+    }
+
+    searchModalAppointments(query) {
+        const appointments = document.querySelectorAll('#modal-appointments-container .appointment-item');
+        appointments.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(query.toLowerCase())) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
     }
 
     searchAppointments(query) {
@@ -613,6 +803,31 @@ class AppointmentsManager {
                 this.saveAppointments();
             }
         });
+    }
+
+    updateDateTime() {
+        const now = new Date();
+        const dateTimeElement = document.getElementById('datetime');
+        if (dateTimeElement) {
+            const formattedDateTime = now.toLocaleDateString('de-DE', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }) + ' • ' + now.toLocaleTimeString('de-DE', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            dateTimeElement.textContent = formattedDateTime;
+        }
+    }
+
+    startDateTimeUpdater() {
+        // Update every second
+        setInterval(() => {
+            this.updateDateTime();
+        }, 1000);
     }
 }
 
